@@ -21,11 +21,10 @@ namespace _2021aoc11
                     this.barlang = barlang;
                     (this.x, this.y) = (x, y);
                 }
-                public void Tölt()
-                {
-                    if (e!=-1)
-                        e++;
-                }
+                public void Tölt() { if (e!=-1) e++; }
+                bool Már_feltöltődött { get => 10 <= e; }
+                public void Bök() { if (Már_feltöltődött) Villan(); }
+                public void Feltámaszt() { if (e < 0) e = 0; }
                 void Villan()
                 {
                     barlang.villanásszámláló++;
@@ -36,12 +35,6 @@ namespace _2021aoc11
                         d.Bök();
                     }
                 }
-                bool Már_feltöltődött { get => 10 <= e; }
-                public void Bök()
-                {
-                    if (Már_feltöltődött)
-                        Villan();
-                }
                 static (int, int)[] Nyolc_szomszéd_helyei = new (int,int)[] { (-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1) };
                 public IEnumerable<Dumbo> Szomszédai 
                 {
@@ -50,7 +43,6 @@ namespace _2021aoc11
                        .Where(pár => barlang.Létező_pozíció(pár.Item1, pár.Item2))
                        .Select(pár => barlang.rács[pár.Item1, pár.Item2]);
                 }
-                public override string ToString() => e.ToString();
                 public void Kiír()
                 {
                     if (0 < e && e <= 9)
@@ -64,14 +56,10 @@ namespace _2021aoc11
                     Console.Write(e);
                     Console.ForegroundColor = ConsoleColor.White;
                 }
-                public void Feltámaszt()
-                {
-                    if (e < 0) e = 0;
-                }
             }
             
-            public int t;
-            public int villanások_száma_az_előző_körig;
+            public int t { get; private set; }
+            public int villanások_száma_az_előző_körig { get; private set; }
             int N, M;
             Dumbo[,] rács;
             public int villanásszámláló;
@@ -87,25 +75,10 @@ namespace _2021aoc11
                     for (int j = 0; j < M; j++)
                         rács[i, j] = new Dumbo(int.Parse(sorok[i][j].ToString()), this, i,j);
             }
-
             bool Létező_pozíció(int x, int y) => 0 <= x && x < N && 0 <= y && y < M;
-            void Összes_feltöltése()
-            {
-                foreach (Dumbo dumbo in rács)
-                    dumbo.Tölt();
-            }
-
-            void Összes_megbökése()
-            {
-                foreach (Dumbo dumbo in rács)
-                    dumbo.Bök();
-            }
-            void Összes_feltámasztása()
-            {
-                foreach (Dumbo dumbo in rács)
-                    dumbo.Feltámaszt();
-            }
-
+            void Összes_feltöltése() { foreach (Dumbo dumbo in rács) dumbo.Tölt(); }
+            void Összes_megbökése() { foreach (Dumbo dumbo in rács) dumbo.Bök(); }
+            void Összes_feltámasztása() { foreach (Dumbo dumbo in rács) dumbo.Feltámaszt(); }
             public void Szimulál(Func<Barlang, bool> predicate, bool debug = false, int speed =0)
             {
                 Diagnosztika($"Beolvasáskor:");
@@ -125,7 +98,6 @@ namespace _2021aoc11
             }
             void Diagnosztika(string megj = "", bool debug=false, int speed=0)
             {
-
                 if (!debug)
                 {
                     System.Threading.Thread.Sleep(speed);
@@ -149,8 +121,11 @@ namespace _2021aoc11
             Barlang barlang = new Barlang("input.txt");
             /**/
 
-            //barlang.Szimulál(x => barlang.t<100 , false, 200);
+            /** /
+            barlang.Szimulál(x => barlang.t<100 , false, 200);
+            /*/
             barlang.Szimulál(x => barlang.villanások_száma_az_előző_körig + 100 != barlang.villanásszámláló, false, 200);
+            /**/
 
             Console.ReadKey();
         }
